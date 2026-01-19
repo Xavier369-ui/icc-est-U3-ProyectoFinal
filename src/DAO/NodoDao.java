@@ -1,39 +1,22 @@
-package dao;
+package DAO;
 
-import model.Nodo;
-import persistence.FileManager;
-
+import models.Nodo;
 import java.util.ArrayList;
-import java.util.List;
 
-public class NodoDAO {
-    private final FileManager fm;
+public class NodoDao {
 
-    public NodoDAO(FileManager fm) {
-        this.fm = fm;
+    private ArrayList<Nodo> nodos;
+
+    public NodoDao() {
+        nodos = new ArrayList<Nodo>();
     }
 
-    public List<Nodo> cargar() {
-        List<String> lines = fm.readLines("nodes.csv");
-        List<Nodo> out = new ArrayList<>();
-        for (String l : lines) {
-            if (l.trim().isEmpty() || l.startsWith("#")) continue;
-            String[] p = l.split(";");
-            if (p.length < 3) continue;
-            String id = p[0];
-            int x = Integer.parseInt(p[1]);
-            int y = Integer.parseInt(p[2]);
-            out.add(new Nodo(id, x, y));
-        }
-        return out;
+    public void guardar(Nodo nodo) {
+        nodos.add(nodo);
     }
 
-    public void guardar(List<Nodo> nodos) {
-        List<String> lines = new ArrayList<>();
-        lines.add("# id;x;y");
-        for (Nodo n : nodos) {
-            lines.add(n.getId() + ";" + n.getX() + ";" + n.getY());
-        }
-        fm.writeLines("nodes.csv", lines);
+    public ArrayList<Nodo> obtenerTodos() {
+        return nodos;
     }
 }
+

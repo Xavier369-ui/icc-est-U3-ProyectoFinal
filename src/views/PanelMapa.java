@@ -1,170 +1,195 @@
 package views;
 
-import controllers.GrafoController;
-import models.Arista;
-import models.Grafo;
+import javax.swing.JPanel;
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+import controllers.EdicionController;
+import logica.Ruta;
 import models.Nodo;
 import models.Obstaculo;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
-
 public class PanelMapa extends JPanel {
-    private Grafo grafo;
-    private GrafoController controller;
 
-    private BufferedImage backgroundImage;
+    private Image mapa;
+    private EdicionController edicion;
 
-    private Nodo selectedNodo;
-    private Nodo startNodo;
-    private Nodo endNodo;
+    private ArrayList<Nodo> nodos;
+    private ArrayList<Obstaculo> obstaculos;
 
-    private List<Nodo> visited = new ArrayList<>();
-    private List<Nodo> path = new ArrayList<>();
+    private Nodo inicio;
+    private Nodo destino;
 
-    public PanelMapa() {
-        setPreferredSize(new Dimension(900, 600));
-        setBackground(Color.WHITE);
+    private Ruta ruta;
+    private boolean mostrarRuta;
+
+    private static final int DISTANCIA_VECINO = 60;
+    private static final int RADIO_SELECCION = 15;
+
+    public PanelMapa(EdicionController edicion) {
+
+        this.edicion = edicion;
+        setLayout(null);
+
+        mapa = new ImageIcon("data/mapa.png").getImage();
+
+        nodos = new ArrayList<Nodo>();
+        obstaculos = new ArrayList<Obstaculo>();
+
+        ruta = null;
+        mostrarRuta = true;
+
         addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(MouseEvent e) {
-                if (controller == null) return;
-                boolean right = SwingUtilities.isRightMouseButton(e);
-                boolean shift = (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) != 0;
-                controller.onClick(e.getX(), e.getY(), right, shift);
+            public void mouseClicked(MouseEvent e) {
+
+                int x = e.getX();
+                int y = e.getY();
+
+                if (edicion.getModoActual() == EdicionController.MODO_NODO) {
+                    agregarNodo(new Nodo(x, y));
+                }
+
+                if (edicion.getModoActual() == EdicionController.MODO_OBSTACULO) {
+                    obstaculos.add(new Obstaculo(x, y));
+                }
+
+                if (edicion.getModoActual() == EdicionController.MODO_INICIO) {
+                    inicio = buscarNodo(x, y);
+                }
+
+                if (edicion.getModoActual() == EdicionController.MODO_DESTINO) {
+                    destino = buscarNodo(x, y);
+                }
+
+                repaint();
             }
         });
     }
 
-    public void setController(GrafoController controller) {
-        this.controller = controller;
+    // 🔹 CONECTA NODOS AUTOMÁTICAMENTE
+    private void agregarNodo(Nodo nuevo) {
+
+        for (Nodo existente : nodos) {
+
+            int dx = existente.getX() - nuevo.getX();
+            int dy = existente.getY() - nuevo.getY();
+            double distancia = Math.sqrt(dx * dx + dy * dy);
+
+            if (distancia <= DISTANCIA_VECINO) {
+                existente.agregarVecino(nuevo);
+                nuevo.agregarVecino(existente);
+            }
+        }
+
+        nodos.add(nuevo);
     }
 
-    public void setGrafo(Grafo grafo) { this.grafo = grafo; }
-    public void setBackgroundImage(BufferedImage img) { this.backgroundImage = img; }
+    // 🔹 SELECCIÓN MÁS TOLERANTE
+    private Nodo buscarNodo(int x, int y) {
 
-    public void setSelectedNodo(Nodo n) { this.selectedNodo = n; }
-    public void setStartNodo(Nodo n) { this.startNodo = n; }
-    public void setEndNodo(Nodo n) { this.endNodo = n; }
-
-    public void setVisitedNodes(List<Nodo> list) { this.visited = new ArrayList<>(list); }
-    public void setPathNodes(List<Nodo> list) { this.path = new ArrayList<>(list); }
-
-    public void clearHighlights() {
-        visited.clear();
-        path.clear();
-    }
-
-    public Nodo findNodoAt(int x, int y) {
-        if (grafo == null) return null;
-        int r = 10;
-        for (Nodo n : grafo.getNodos()) {
-            int dx = n.getX() - x;
-            int dy = n.getY() - y;
-            if (dx * dx + dy * dy <= r * r) return n;
+        for (Nodo n : nodos) {
+            if (Math.abs(n.getX() - x) <= RADIO_SELECCION &&
+                Math.abs(n.getY() - y) <= RADIO_SELECCION) {
+                return n;
+            }
         }
         return null;
     }
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g.create();
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    public Nodo getNodoInicio() {
+        return inicio;
+    }
 
-        if (backgroundImage != null) {
-            g2.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), null);
-        } else {
-            drawGrid(g2);
-            g2.setColor(new Color(30, 30, 30));
-            g2.drawString("Coloca data/map.png para usarlo como fondo", 12, 18);
-        }
+    public Nodo getNodoDestino() {
+        return destino;
+    }
 
-        if (grafo == null) {
-            g2.dispose();
+    public void setRuta(Ruta ruta, String metodo) {
+
+        if (inicio == null || destino == null) {
+            JOptionPane.showMessageDialog(this,
+                "Debe seleccionar nodo de inicio y destino",
+                "Error",
+                JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        // Obstaculos
-        g2.setColor(new Color(0, 0, 0, 70));
-        for (Obstaculo o : grafo.getObstaculos()) {
-            g2.fillRect(o.getX(), o.getY(), o.getW(), o.getH());
-        }
+        this.ruta = invertirRuta(ruta);
+        this.mostrarRuta = true;
+        repaint();
+    }
 
-        // Aristas
-        g2.setStroke(new BasicStroke(2f));
-        g2.setColor(new Color(40, 40, 40, 180));
-        for (Nodo a : grafo.getNodos()) {
-            for (Arista ar : grafo.getAristasDesde(a)) {
-                Nodo b = ar.getHasta();
-                if (a.getId().compareTo(b.getId()) < 0) {
-                    if (grafo.edgeBlocked(a, b)) {
-                        g2.setStroke(new BasicStroke(2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{6f, 6f}, 0));
-                        g2.setColor(new Color(140, 0, 0, 160));
-                    } else {
-                        g2.setStroke(new BasicStroke(2f));
-                        g2.setColor(new Color(40, 40, 40, 180));
-                    }
-                    g2.drawLine(a.getX(), a.getY(), b.getX(), b.getY());
-                }
-            }
-        }
+    // 🔹 INVIERTE LA RUTA PARA QUE SE VEA BIEN
+    private Ruta invertirRuta(Ruta original) {
 
-        // Visitados (exploracion)
-        g2.setStroke(new BasicStroke(4f));
-        g2.setColor(new Color(0, 140, 0, 160));
-        for (int i = 0; i < visited.size() - 1; i++) {
-            Nodo a = visited.get(i);
-            Nodo b = visited.get(i + 1);
-            g2.drawLine(a.getX(), a.getY(), b.getX(), b.getY());
+        Ruta nueva = new Ruta();
+        for (int i = original.getNodos().size() - 1; i >= 0; i--) {
+            nueva.agregarNodo(original.getNodos().get(i));
         }
+        return nueva;
+    }
 
-        // Ruta final
-        g2.setStroke(new BasicStroke(6f));
-        g2.setColor(new Color(110, 0, 160, 200));
-        for (int i = 0; i < path.size() - 1; i++) {
-            Nodo a = path.get(i);
-            Nodo b = path.get(i + 1);
-            g2.drawLine(a.getX(), a.getY(), b.getX(), b.getY());
+    public void mostrarRuta() {
+        mostrarRuta = true;
+        repaint();
+    }
+
+    public void ocultarRuta() {
+        mostrarRuta = false;
+        repaint();
+    }
+
+    public void limpiarRuta() {
+        ruta = null;
+        repaint();
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+
+        super.paintComponent(g);
+
+        g.drawImage(mapa, 0, 0, getWidth(), getHeight(), this);
+
+        // Obstáculos
+        g.setColor(Color.RED);
+        for (Obstaculo o : obstaculos) {
+            g.fillOval(o.getX() - 4, o.getY() - 4, 8, 8);
         }
 
         // Nodos
-        for (Nodo n : grafo.getNodos()) {
-            drawNodo(g2, n);
+        g.setColor(Color.BLACK);
+        for (Nodo n : nodos) {
+            g.fillOval(n.getX() - 5, n.getY() - 5, 10, 10);
         }
 
-        g2.dispose();
-    }
+        // Inicio
+        if (inicio != null) {
+            g.setColor(Color.GREEN);
+            g.fillOval(inicio.getX() - 7, inicio.getY() - 7, 14, 14);
+        }
 
-    private void drawNodo(Graphics2D g2, Nodo n) {
-        int r = 10;
-        boolean isSelected = selectedNodo != null && selectedNodo.equals(n);
-        boolean isStart = startNodo != null && startNodo.equals(n);
-        boolean isEnd = endNodo != null && endNodo.equals(n);
+        // Destino
+        if (destino != null) {
+            g.setColor(Color.BLUE);
+            g.fillOval(destino.getX() - 7, destino.getY() - 7, 14, 14);
+        }
 
-        if (isStart) g2.setColor(new Color(0, 110, 0));
-        else if (isEnd) g2.setColor(new Color(160, 0, 0));
-        else if (isSelected) g2.setColor(new Color(0, 90, 170));
-        else g2.setColor(new Color(230, 230, 230));
-
-        g2.fillOval(n.getX() - r, n.getY() - r, 2 * r, 2 * r);
-        g2.setColor(new Color(40, 40, 40));
-        g2.setStroke(new BasicStroke(2f));
-        g2.drawOval(n.getX() - r, n.getY() - r, 2 * r, 2 * r);
-
-        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 12f));
-        g2.drawString(n.getId(), n.getX() + r + 3, n.getY() - r - 2);
-    }
-
-    private void drawGrid(Graphics2D g2) {
-        g2.setColor(new Color(230, 230, 230));
-        int step = 25;
-        for (int x = 0; x < getWidth(); x += step) g2.drawLine(x, 0, x, getHeight());
-        for (int y = 0; y < getHeight(); y += step) g2.drawLine(0, y, getWidth(), y);
+        // Ruta BFS / DFS
+        if (ruta != null && mostrarRuta) {
+            g.setColor(new Color(128, 0, 128));
+            for (Nodo n : ruta.getNodos()) {
+                g.fillOval(n.getX() - 4, n.getY() - 4, 8, 8);
+            }
+        }
     }
 }
+
+
+
+
+
+

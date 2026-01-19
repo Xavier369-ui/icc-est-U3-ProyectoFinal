@@ -1,16 +1,27 @@
 package controllers;
 
+import logica.BFS;
+import logica.DFS;
+import logica.Ruta;
+import views.PanelMapa;
+
 public class EjecucionController {
-    private final GrafoController grafoController;
 
-    public EjecucionController(GrafoController grafoController) {
-        this.grafoController = grafoController;
+    private PanelMapa panel;
+
+    public EjecucionController(PanelMapa panel) {
+        this.panel = panel;
     }
 
-    public void activar() {
-        grafoController.setModo(GrafoController.Modo.EJECUCION);
+    public void ejecutarBFS() {
+        Ruta ruta = BFS.ejecutar(panel.getNodoInicio(), panel.getNodoDestino());
+        panel.setRuta(ruta, "BFS");
     }
 
-    public void ejecutarBFS() { grafoController.ejecutarBFS(); }
-    public void ejecutarDFS() { grafoController.ejecutarDFS(); }
+    public void ejecutarDFS() {
+        Ruta ruta = DFS.ejecutar(panel.getNodoInicio(), panel.getNodoDestino());
+        panel.setRuta(ruta, "DFS");
+    }
 }
+
+

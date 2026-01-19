@@ -1,26 +1,33 @@
 package views;
 
-import controllers.GrafoController;
-
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import controllers.EdicionController;
+import controllers.EjecucionController;
 
 public class MainFrame extends JFrame {
-    public MainFrame(GrafoController controller) {
-        super("Proyecto Final - Grafo BFS/DFS");
+
+    public MainFrame() {
+
+        setTitle("Proyecto Final - BFS y DFS");
+        setSize(900, 600);
+        setLayout(null);
+        setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        PanelMapa panelMapa = new PanelMapa();
-        panelMapa.setController(controller);
-        controller.bindPanel(panelMapa);
+        EdicionController edicion = new EdicionController();
 
-        BarraHerramientas barra = new BarraHerramientas(controller);
+        PanelMapa panel = new PanelMapa(edicion);
+        panel.setBounds(0, 0, 900, 550);
+        add(panel);
 
-        setLayout(new BorderLayout());
-        add(barra, BorderLayout.NORTH);
-        add(new JScrollPane(panelMapa), BorderLayout.CENTER);
+        EjecucionController ejecucion = new EjecucionController(panel);
 
-        pack();
-        setLocationRelativeTo(null);
+        MenuPrincipal menu = new MenuPrincipal(edicion, ejecucion, panel);
+        setJMenuBar(menu);
+
+        setVisible(true);
     }
 }
+
+
+

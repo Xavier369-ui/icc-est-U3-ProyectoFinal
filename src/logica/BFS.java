@@ -1,54 +1,47 @@
 package logica;
 
-import models.Arista;
-import models.Grafo;
 import models.Nodo;
-
 import java.util.*;
 
 public class BFS {
-    public Ruta buscar(Grafo grafo, Nodo inicio, Nodo destino) {
-        Ruta r = new Ruta();
-        if (inicio == null || destino == null) return r;
 
-        Queue<Nodo> q = new ArrayDeque<>();
-        Set<Nodo> vis = new HashSet<>();
-        Map<Nodo, Nodo> prev = new HashMap<>();
+    public static Ruta ejecutar(Nodo inicio, Nodo destino) {
 
-        q.add(inicio);
-        vis.add(inicio);
+        Queue<Nodo> cola = new LinkedList<Nodo>();
+        Map<Nodo, Nodo> previo = new HashMap<Nodo, Nodo>();
+        ArrayList<Nodo> visitados = new ArrayList<Nodo>();
 
-        while (!q.isEmpty()) {
-            Nodo actual = q.poll();
-            r.addVisitado(actual);
+        cola.add(inicio);
+        visitados.add(inicio);
+        previo.put(inicio, null);
 
-            if (actual.equals(destino)) break;
+        while (!cola.isEmpty()) {
 
-            for (Arista ar : grafo.getAristasDesde(actual)) {
-                Nodo sig = ar.getHasta();
-                if (vis.contains(sig)) continue;
-                if (grafo.edgeBlocked(actual, sig)) continue;
-                vis.add(sig);
-                prev.put(sig, actual);
-                q.add(sig);
+            Nodo actual = cola.poll();
+
+            if (actual.equals(destino)) {
+                break;
+            }
+
+            for (Nodo vecino : actual.getVecinos()) {
+
+                if (!visitados.contains(vecino)) {
+
+                    visitados.add(vecino);
+                    previo.put(vecino, actual);
+                    cola.add(vecino);
+                }
             }
         }
 
-        r.setRutaFinal(reconstruir(prev, inicio, destino));
-        return r;
-    }
+        Ruta ruta = new Ruta();
+        Nodo paso = destino;
 
-    private List<Nodo> reconstruir(Map<Nodo, Nodo> prev, Nodo inicio, Nodo destino) {
-        if (inicio.equals(destino)) return Collections.singletonList(inicio);
-        if (!prev.containsKey(destino)) return Collections.emptyList();
-        LinkedList<Nodo> path = new LinkedList<>();
-        Nodo cur = destino;
-        while (cur != null && !cur.equals(inicio)) {
-            path.addFirst(cur);
-            cur = prev.get(cur);
+        while (paso != null) {
+            ruta.agregarNodo(paso);
+            paso = previo.get(paso);
         }
-        if (cur == null) return Collections.emptyList();
-        path.addFirst(inicio);
-        return path;
+
+        return ruta;
     }
 }
