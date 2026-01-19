@@ -1,10 +1,10 @@
-package ui;
+package views;
 
-import controller.GrafoController;
-import model.Arista;
-import model.Grafo;
-import model.Nodo;
-import model.Obstaculo;
+import controllers.GrafoController;
+import models.Arista;
+import models.Grafo;
+import models.Nodo;
+import models.Obstaculo;
 
 import javax.swing.*;
 import java.awt.*;

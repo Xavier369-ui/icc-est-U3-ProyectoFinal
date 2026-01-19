@@ -1,37 +1,37 @@
 package models;
 
 public class Nodo {
+    private final String id;
+    private int x;
+    private int y;
 
-    int id;
-    int x;
-    int y;
-    boolean bloqueado;
-
-    public Nodo(int id, int x, int y) {
+    public Nodo(String id, int x, int y) {
         this.id = id;
         this.x = x;
         this.y = y;
-        this.bloqueado = false;
     }
 
-    public int getId() {
-        return id;
+    public String getId() { return id; }
+    public int getX() { return x; }
+    public int getY() { return y; }
+    public void setX(int x) { this.x = x; }
+    public void setY(int y) { this.y = y; }
+
+    @Override
+    public String toString() {
+        return id + "(" + x + "," + y + ")";
     }
 
-    public int getX() {
-        return x;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Nodo)) return false;
+        Nodo nodo = (Nodo) o;
+        return id.equals(nodo.id);
     }
 
-    public int getY() {
-        return y;
+    @Override
+    public int hashCode() {
+        return id.hashCode();
     }
-
-    public boolean isBloqueado() {
-        return bloqueado;
-    }
-
-    public void setBloqueado(boolean bloqueado) {
-        this.bloqueado = bloqueado;
-    }
-    
 }

@@ -1,6 +1,6 @@
 package views;
 
-import controller.GrafoController;
+import controllers.GrafoController;
 
 import javax.swing.*;
 import java.awt.*;

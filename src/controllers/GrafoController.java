@@ -1,17 +1,19 @@
-package controller;
+package controllers;
 
-import dao.GrafoDAO;
-import logic.BFS;
-import logic.DFS;
-import logic.ModoVisualizacion;
-import logic.Ruta;
-import model.Grafo;
-import model.Nodo;
-import model.Obstaculo;
+import logica.BFS;
+import logica.DFS;
+import logica.ModoVisualizacion;
+import logica.Ruta;
+import models.Grafo;
+import models.Nodo;
+import models.Obstaculo;
 import persistence.FileManager;
-import ui.PanelMapa;
+import views.PanelMapa;
 
 import javax.swing.*;
+
+import Dao.GrafoDAO;
+
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,9 +1,9 @@
 package views;
 
-import controller.EdicionController;
-import controller.EjecucionController;
-import controller.GrafoController;
-import logic.ModoVisualizacion;
+import controllers.EdicionController;
+import controllers.EjecucionController;
+import controllers.GrafoController;
+import logica.ModoVisualizacion;
 
 import javax.swing.*;
 import java.awt.*;
