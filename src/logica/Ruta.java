@@ -1,21 +1,31 @@
 package logica;
 
 import java.util.ArrayList;
+import java.util.List;
 import models.Nodo;
 
 public class Ruta {
 
-    private ArrayList<Nodo> nodos;
+    private List<Nodo> nodos;
 
+    // Constructor vacío (NO se elimina)
     public Ruta() {
-        nodos = new ArrayList<Nodo>();
+        nodos = new ArrayList<>();
     }
 
-    public void agregarNodo(Nodo nodo) {
-        nodos.add(nodo);
+    // ✅ CONSTRUCTOR QUE FALTABA
+    public Ruta(List<Nodo> nodos) {
+        this.nodos = new ArrayList<>(nodos);
     }
 
-    public ArrayList<Nodo> getNodos() {
+    public void agregarNodo(Nodo n) {
+        nodos.add(n);
+    }
+
+    public List<Nodo> getNodos() {
         return nodos;
     }
 }
+
+ 
+

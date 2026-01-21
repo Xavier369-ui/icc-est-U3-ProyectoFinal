@@ -1,9 +1,10 @@
 package controllers;
 
-import logica.BFS;
-import logica.DFS;
-import logica.Ruta;
 import views.PanelMapa;
+import nodes.Node;
+import models.Nodo;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EjecucionController {
 
@@ -14,14 +15,13 @@ public class EjecucionController {
     }
 
     public void ejecutarBFS() {
-        Ruta ruta = BFS.ejecutar(panel.getNodoInicio(), panel.getNodoDestino());
-        panel.setRuta(ruta, "BFS");
+        panel.ejecutarBFS();
     }
 
     public void ejecutarDFS() {
-        Ruta ruta = DFS.ejecutar(panel.getNodoInicio(), panel.getNodoDestino());
-        panel.setRuta(ruta, "DFS");
+        panel.ejecutarDFS();
     }
 }
+
 
 

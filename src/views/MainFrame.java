@@ -8,11 +8,11 @@ public class MainFrame extends JFrame {
 
     public MainFrame() {
 
-        setTitle("Proyecto Final - BFS y DFS");
+        setTitle("Proyecto BFS / DFS");
         setSize(900, 600);
         setLayout(null);
-        setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
 
         EdicionController edicion = new EdicionController();
 
@@ -22,12 +22,14 @@ public class MainFrame extends JFrame {
 
         EjecucionController ejecucion = new EjecucionController(panel);
 
+        // 👇 AQUÍ ESTÁ LA CORRECCIÓN
         MenuPrincipal menu = new MenuPrincipal(edicion, ejecucion, panel);
         setJMenuBar(menu);
 
         setVisible(true);
     }
 }
+
 
 
 
