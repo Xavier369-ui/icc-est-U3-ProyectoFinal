@@ -8,7 +8,7 @@ public class MainFrame extends JFrame {
 
     public MainFrame() {
 
-        setTitle("Proyecto BFS / DFS");
+        setTitle("Mapa");
         setSize(900, 600);
         setLayout(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
