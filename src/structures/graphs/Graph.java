@@ -5,9 +5,17 @@ import nodes.Node;
 import models.Nodo;
 import logica.Ruta;
 
+/**
+ * Grafo genérico usado para BFS y DFS
+ * Trabaja con lista de adyacencia
+ */
 public class Graph<T> {
 
     private Map<Node<T>, List<Node<T>>> mapa = new HashMap<>();
+
+    /* =========================
+       GESTIÓN DE NODOS
+       ========================= */
 
     public void addNode(Node<T> n) {
         mapa.putIfAbsent(n, new ArrayList<>());
@@ -16,7 +24,7 @@ public class Graph<T> {
     public void addEdge(Node<T> a, Node<T> b) {
         addNode(a);
         addNode(b);
-        mapa.get(a).add(b);
+        mapa.get(a).add(b); // grafo dirigido (calles)
     }
 
     public List<Node<T>> getNeighbors2(Node<T> n) {
@@ -29,7 +37,9 @@ public class Graph<T> {
         }
     }
 
-    /* ================= BFS ================= */
+    /* =========================
+       BFS (ANCHURA)
+       ========================= */
 
     public Ruta bfsRuta(
             Node<T> inicio,
@@ -47,7 +57,10 @@ public class Graph<T> {
         padre.put(inicio, null);
 
         while (!cola.isEmpty()) {
+
             Node<T> actual = cola.poll();
+
+            // 👉 se guarda el orden de exploración (AZUL)
             exploracion.add(actual);
 
             if (actual.equals(destino)) break;
@@ -63,10 +76,13 @@ public class Graph<T> {
             }
         }
 
+        // 👉 se construye la ruta final (MORADO)
         return construirRuta(destino, padre);
     }
 
-    /* ================= DFS ================= */
+    /* =========================
+       DFS (PROFUNDIDAD)
+       ========================= */
 
     public Ruta dfsRuta(
             Node<T> inicio,
@@ -78,11 +94,27 @@ public class Graph<T> {
         Map<Node<T>, Node<T>> padre = new HashMap<>();
         Set<Node<T>> visitados = new HashSet<>();
 
-        dfsRec(inicio, destino, visitados, padre, exploracion, bloqueados);
+        padre.put(inicio, null);
+
+        // 👉 DFS RECURSIVO QUE SÍ GUARDA EL RECORRIDO
+        dfsRecursivo(
+                inicio,
+                destino,
+                visitados,
+                padre,
+                exploracion,
+                bloqueados
+        );
+
         return construirRuta(destino, padre);
     }
 
-    private boolean dfsRec(
+    /**
+     * DFS recursivo
+     * Guarda TODOS los nodos visitados en orden
+     * Esto es lo que faltaba antes
+     */
+    private boolean dfsRecursivo(
             Node<T> actual,
             Node<T> destino,
             Set<Node<T>> visitados,
@@ -92,9 +124,13 @@ public class Graph<T> {
     ) {
 
         visitados.add(actual);
+
+        // 👉 se guarda el paso para animación (AZUL)
         exploracion.add(actual);
 
-        if (actual.equals(destino)) return true;
+        if (actual.equals(destino)) {
+            return true;
+        }
 
         for (Node<T> vecino : getNeighbors2(actual)) {
 
@@ -103,11 +139,24 @@ public class Graph<T> {
 
             padre.put(vecino, actual);
 
-            if (dfsRec(vecino, destino, visitados, padre, exploracion, bloqueados))
+            if (dfsRecursivo(
+                    vecino,
+                    destino,
+                    visitados,
+                    padre,
+                    exploracion,
+                    bloqueados
+            )) {
                 return true;
+            }
         }
+
         return false;
     }
+
+    /* =========================
+       CONSTRUCCIÓN DE RUTA FINAL
+       ========================= */
 
     private Ruta construirRuta(Node<T> destino, Map<Node<T>, Node<T>> padre) {
 

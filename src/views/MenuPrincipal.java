@@ -27,29 +27,27 @@ public class MenuPrincipal extends JMenuBar {
         JMenuItem itemBFS = new JMenuItem("BFS");
         JMenuItem itemDFS = new JMenuItem("DFS");
 
-        JMenuItem itemMostrar = new JMenuItem("Mostrar Camino");
-        JMenuItem itemOcultar = new JMenuItem("Ocultar Camino");
-        JMenuItem itemLimpiarConexiones = new JMenuItem("Limpiar Conexiones");
-        JMenuItem itemLimpiarTodo = new JMenuItem("Limpiar Todo");
+        JMenuItem itemNuevoRecorrido = new JMenuItem("Iniciar otro recorrido");
 
         JButton btnRun = new JButton("Run");
 
+        // ===== EDICIÓN =====
         itemNodo.addActionListener(e -> edicion.setModoNodo());
         itemObstaculo.addActionListener(e -> edicion.setModoObstaculo());
         itemConectar.addActionListener(e -> edicion.setModoConectar());
         itemEliminar.addActionListener(e -> edicion.setModoEliminar());
 
+        // ===== SELECCIÓN =====
         itemInicio.addActionListener(e -> edicion.setModoInicio());
         itemDestino.addActionListener(e -> edicion.setModoDestino());
 
+        // ===== RECORRIDO =====
         itemBFS.addActionListener(e -> ejecucion.seleccionarBFS());
         itemDFS.addActionListener(e -> ejecucion.seleccionarDFS());
         btnRun.addActionListener(e -> ejecucion.run());
 
-        itemMostrar.addActionListener(e -> panel.mostrarRecorrido(true));
-        itemOcultar.addActionListener(e -> panel.mostrarRecorrido(false));
-        itemLimpiarConexiones.addActionListener(e -> panel.limpiarConexiones());
-        itemLimpiarTodo.addActionListener(e -> panel.limpiarTodo());
+        // 👉 LO QUE PEDISTE
+        itemNuevoRecorrido.addActionListener(e -> panel.iniciarOtroRecorrido());
 
         menuEdicion.add(itemNodo);
         menuEdicion.add(itemObstaculo);
@@ -61,10 +59,7 @@ public class MenuPrincipal extends JMenuBar {
 
         menuRecorrido.add(itemBFS);
         menuRecorrido.add(itemDFS);
-        menuRecorrido.add(itemMostrar);
-        menuRecorrido.add(itemOcultar);
-        menuRecorrido.add(itemLimpiarConexiones);
-        menuRecorrido.add(itemLimpiarTodo);
+        menuRecorrido.add(itemNuevoRecorrido);
 
         add(menuEdicion);
         add(menuSeleccion);
@@ -74,3 +69,4 @@ public class MenuPrincipal extends JMenuBar {
         add(btnRun);
     }
 }
+
