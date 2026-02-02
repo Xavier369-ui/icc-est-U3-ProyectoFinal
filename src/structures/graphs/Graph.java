@@ -13,9 +13,7 @@ public class Graph<T> {
 
     private Map<Node<T>, List<Node<T>>> mapa = new HashMap<>();
 
-    /* =========================
-       GESTIÓN DE NODOS
-       ========================= */
+   
 
     public void addNode(Node<T> n) {
         mapa.putIfAbsent(n, new ArrayList<>());
@@ -60,7 +58,7 @@ public class Graph<T> {
 
             Node<T> actual = cola.poll();
 
-            // 👉 se guarda el orden de exploración (AZUL)
+            //  se guarda el orden de exploración (AZUL)
             exploracion.add(actual);
 
             if (actual.equals(destino)) break;
@@ -76,7 +74,7 @@ public class Graph<T> {
             }
         }
 
-        // 👉 se construye la ruta final (MORADO)
+        //  se construye la ruta final (MORADO)
         return construirRuta(destino, padre);
     }
 
@@ -96,7 +94,7 @@ public class Graph<T> {
 
         padre.put(inicio, null);
 
-        // 👉 DFS RECURSIVO QUE SÍ GUARDA EL RECORRIDO
+        //  DFS RECURSIVO QUE SÍ GUARDA EL RECORRIDO
         dfsRecursivo(
                 inicio,
                 destino,
@@ -112,7 +110,7 @@ public class Graph<T> {
     /**
      * DFS recursivo
      * Guarda TODOS los nodos visitados en orden
-     * Esto es lo que faltaba antes
+     
      */
     private boolean dfsRecursivo(
             Node<T> actual,
@@ -125,7 +123,7 @@ public class Graph<T> {
 
         visitados.add(actual);
 
-        // 👉 se guarda el paso para animación (AZUL)
+        //  se guarda el paso para animación (AZUL)
         exploracion.add(actual);
 
         if (actual.equals(destino)) {

@@ -22,7 +22,7 @@ public class MainFrame extends JFrame {
 
         EjecucionController ejecucion = new EjecucionController(panel);
 
-        // 👇 AQUÍ ESTÁ LA CORRECCIÓN
+        //  AQUÍ ESTÁ LA CORRECCIÓN
         MenuPrincipal menu = new MenuPrincipal(edicion, ejecucion, panel);
         setJMenuBar(menu);
 

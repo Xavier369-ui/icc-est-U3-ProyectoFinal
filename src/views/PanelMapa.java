@@ -17,8 +17,6 @@ import nodes.Node;
 
 /**
  * Panel principal del mapa
- * NO SE QUITA NADA
- * SOLO SE AÑADEN LOS JOptionPane SOLICITADOS
  */
 public class PanelMapa extends JPanel {
 
@@ -92,7 +90,7 @@ public class PanelMapa extends JPanel {
      */
     private void ejecutarRecorrido(boolean bfs) {
 
-        // 🔴 VALIDACIÓN: inicio y destino obligatorios
+        //  VALIDACIÓN: inicio y destino obligatorios
         if (inicio == null || destino == null) {
             JOptionPane.showMessageDialog(
                     this,
@@ -137,7 +135,7 @@ public class PanelMapa extends JPanel {
             } else {
                 timer.stop();
 
-                // ✅ MENSAJES SOLICITADOS
+                //  MENSAJES SOLICITADOS
                 if (rutaFinal == null || rutaFinal.getNodos().isEmpty()) {
                     JOptionPane.showMessageDialog(
                             this,
@@ -168,7 +166,7 @@ public class PanelMapa extends JPanel {
         return bloqueados;
     }
 
-    /* ===================== MÉTODOS DEL MENÚ (NO SE QUITAN) ===================== */
+    /* ===================== MÉTODOS DEL MENÚ  ===================== */
 
     public void mostrarRecorrido(boolean mostrar) {
         this.mostrarRecorrido = mostrar;
@@ -317,8 +315,7 @@ public class PanelMapa extends JPanel {
 
     /**
      * Limpia SOLO el recorrido y el inicio/destino
-     * NO borra nodos
-     * NO borra conexiones
+     
      */
     public void iniciarOtroRecorrido() {
 

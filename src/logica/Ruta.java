@@ -8,12 +8,12 @@ public class Ruta {
 
     private List<Nodo> nodos;
 
-    // Constructor vacío (NO se elimina)
+   
     public Ruta() {
         nodos = new ArrayList<>();
     }
 
-    // ✅ CONSTRUCTOR QUE FALTABA
+  
     public Ruta(List<Nodo> nodos) {
         this.nodos = new ArrayList<>(nodos);
     }

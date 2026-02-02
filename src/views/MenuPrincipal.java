@@ -46,7 +46,7 @@ public class MenuPrincipal extends JMenuBar {
         itemDFS.addActionListener(e -> ejecucion.seleccionarDFS());
         btnRun.addActionListener(e -> ejecucion.run());
 
-        // 👉 LO QUE PEDISTE
+        
         itemNuevoRecorrido.addActionListener(e -> panel.iniciarOtroRecorrido());
 
         menuEdicion.add(itemNodo);

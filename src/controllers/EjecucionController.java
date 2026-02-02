@@ -23,7 +23,7 @@ public class EjecucionController {
         modoRecorrido = MODO_DFS;
     }
 
-    // 👉 Ejecuta
+    //  Ejecuta
     public void run() {
         if (modoRecorrido == MODO_BFS) {
             panel.ejecutarBFS();
