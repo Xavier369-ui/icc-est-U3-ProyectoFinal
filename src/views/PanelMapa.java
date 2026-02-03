@@ -48,7 +48,8 @@ public class PanelMapa extends JPanel {
     public PanelMapa(EdicionController edicion) {
 
         this.edicion = edicion;
-        setLayout(null);
+        setLayout(new BorderLayout());
+
 
         mapa = new ImageIcon("data/mapa.png").getImage();
 
@@ -71,6 +72,13 @@ public class PanelMapa extends JPanel {
                 repaint();
             }
         });
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                repaint();
+            }
+        });
+
     }
 
     /* ===================== BFS / DFS ===================== */
