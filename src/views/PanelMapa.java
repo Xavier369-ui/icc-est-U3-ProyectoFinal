@@ -3,6 +3,7 @@ package views;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
@@ -51,7 +52,8 @@ public class PanelMapa extends JPanel {
         setLayout(new BorderLayout());
 
 
-        mapa = new ImageIcon("data/mapa.png").getImage();
+        mapa = new ImageIcon(PanelMapa.class.getResource("/data/mapa.png")).getImage();
+
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -245,12 +247,37 @@ public class PanelMapa extends JPanel {
     }
 
     private void guardarCoordenada(Nodo n) {
-        try (FileWriter fw = new FileWriter("data/coordenadas.txt", true)) {
+
+        try {
+        
+            String home = System.getProperty("user.home");
+
+            // Ruta: Documentos/CarpetaCoordenadas
+            File carpeta = new File(home + File.separator + "Documents"
+                                + File.separator + "CarpetaCoordenadas");
+
+            
+            if (!carpeta.exists()) {
+                carpeta.mkdirs();
+            }
+
+            // Archivo coordenadas.txt dentro de la carpeta
+            File archivo = new File(carpeta, "coordenadas.txt");
+
+            FileWriter fw = new FileWriter(archivo, true);
             fw.write(n.getX() + "," + n.getY() + "\n");
+            fw.close();
+
         } catch (IOException e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(
+                this,
+                "Error al guardar coordenadas:\n" + e.getMessage(),
+                "Error de persistencia",
+                JOptionPane.ERROR_MESSAGE
+            );
         }
     }
+
 
     /* ===================== DIBUJO ===================== */
 
