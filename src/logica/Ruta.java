@@ -1,25 +1,14 @@
 package logica;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import models.Nodo;
 
 public class Ruta {
 
     private List<Nodo> nodos;
 
-   
-    public Ruta() {
-        nodos = new ArrayList<>();
-    }
-
-  
     public Ruta(List<Nodo> nodos) {
-        this.nodos = new ArrayList<>(nodos);
-    }
-
-    public void agregarNodo(Nodo n) {
-        nodos.add(n);
+        this.nodos = nodos;
     }
 
     public List<Nodo> getNodos() {
@@ -27,5 +16,4 @@ public class Ruta {
     }
 }
 
- 
 

@@ -2,8 +2,7 @@ package models;
 
 public class Nodo {
 
-    private int x;
-    private int y;
+    private int x, y;
 
     public Nodo(int x, int y) {
         this.x = x;
@@ -25,5 +24,4 @@ public class Nodo {
         return x * 31 + y;
     }
 }
-
 

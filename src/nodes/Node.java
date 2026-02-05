@@ -8,21 +8,12 @@ public class Node<T> {
         this.value = value;
     }
 
-    public T getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return value.toString();
-    }
+    public T getValue() { return value; }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
         if (!(o instanceof Node)) return false;
-        Node<?> node = (Node<?>) o;
-        return value.equals(node.value);
+        return value.equals(((Node<?>) o).value);
     }
 
     @Override

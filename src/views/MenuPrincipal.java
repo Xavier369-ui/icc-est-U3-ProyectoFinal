@@ -1,72 +1,63 @@
 package views;
 
-import controllers.EdicionController;
-import controllers.EjecucionController;
 import javax.swing.*;
+import controllers.*;
 
 public class MenuPrincipal extends JMenuBar {
 
     public MenuPrincipal(
             EdicionController edicion,
+            ConexionController conexion,
             EjecucionController ejecucion,
-            PanelMapa panel
-    ) {
+            PanelMapa panel) {
 
-        JMenu menuEdicion = new JMenu("Edicion");
-        JMenu menuSeleccion = new JMenu("Seleccion");
-        JMenu menuRecorrido = new JMenu("Recorrido");
+        JMenu ed = new JMenu("Edicion");
+        JMenu rec = new JMenu("Recorrido");
+        JMenu con = new JMenu("Conexiones");
 
-        JMenuItem itemNodo = new JMenuItem("Agregar Nodo");
-        JMenuItem itemObstaculo = new JMenuItem("Agregar Obstaculo");
-        JMenuItem itemConectar = new JMenuItem("Conectar Nodos");
-        JMenuItem itemEliminar = new JMenuItem("Eliminar Nodo");
+        JMenuItem nodo = new JMenuItem("Agregar nodo");
+        nodo.addActionListener(e -> edicion.setModoNodo());
 
-        JMenuItem itemInicio = new JMenuItem("Seleccionar Inicio");
-        JMenuItem itemDestino = new JMenuItem("Seleccionar Destino");
+        JMenuItem obs = new JMenuItem("Agregar obstaculo");
+        obs.addActionListener(e -> edicion.setModoObstaculo());
 
-        JMenuItem itemBFS = new JMenuItem("BFS");
-        JMenuItem itemDFS = new JMenuItem("DFS");
+        ed.add(nodo);
+        ed.add(obs);
 
-        JMenuItem itemNuevoRecorrido = new JMenuItem("Iniciar otro recorrido");
+        JMenuItem bfs = new JMenuItem("BFS");
+        JMenuItem dfs = new JMenuItem("DFS");
+        JButton run = new JButton("Run");
 
-        JButton btnRun = new JButton("Run");
+        bfs.addActionListener(e -> ejecucion.seleccionarBFS());
+        dfs.addActionListener(e -> ejecucion.seleccionarDFS());
+        run.addActionListener(e -> ejecucion.run());
 
-        // ===== EDICIÓN =====
-        itemNodo.addActionListener(e -> edicion.setModoNodo());
-        itemObstaculo.addActionListener(e -> edicion.setModoObstaculo());
-        itemConectar.addActionListener(e -> edicion.setModoConectar());
-        itemEliminar.addActionListener(e -> edicion.setModoEliminar());
+        rec.add(bfs);
+        rec.add(dfs);
 
-        // ===== SELECCIÓN =====
-        itemInicio.addActionListener(e -> edicion.setModoInicio());
-        itemDestino.addActionListener(e -> edicion.setModoDestino());
+        JMenuItem uni = new JMenuItem("Agregar unidireccional");
+        JMenuItem bi = new JMenuItem("Agregar bidireccional");
+        JMenuItem del = new JMenuItem("Quitar conexion");
+        JMenuItem hide = new JMenuItem("Ocultar conexiones");
+        JMenuItem show = new JMenuItem("Mostrar conexiones");
 
-        // ===== RECORRIDO =====
-        itemBFS.addActionListener(e -> ejecucion.seleccionarBFS());
-        itemDFS.addActionListener(e -> ejecucion.seleccionarDFS());
-        btnRun.addActionListener(e -> ejecucion.run());
+        uni.addActionListener(e -> conexion.setUnidireccional());
+        bi.addActionListener(e -> conexion.setBidireccional());
+        del.addActionListener(e -> conexion.setEliminar());
+        hide.addActionListener(e -> panel.ocultarConexiones());
+        show.addActionListener(e -> panel.mostrarConexiones());
 
-        
-        itemNuevoRecorrido.addActionListener(e -> panel.iniciarOtroRecorrido());
+        con.add(uni);
+        con.add(bi);
+        con.add(del);
+        con.addSeparator();
+        con.add(hide);
+        con.add(show);
 
-        menuEdicion.add(itemNodo);
-        menuEdicion.add(itemObstaculo);
-        menuEdicion.add(itemConectar);
-        menuEdicion.add(itemEliminar);
-
-        menuSeleccion.add(itemInicio);
-        menuSeleccion.add(itemDestino);
-
-        menuRecorrido.add(itemBFS);
-        menuRecorrido.add(itemDFS);
-        menuRecorrido.add(itemNuevoRecorrido);
-
-        add(menuEdicion);
-        add(menuSeleccion);
-        add(menuRecorrido);
-
+        add(ed);
+        add(rec);
+        add(con);
         add(Box.createHorizontalGlue());
-        add(btnRun);
+        add(run);
     }
 }
-

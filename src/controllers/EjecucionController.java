@@ -4,31 +4,21 @@ import views.PanelMapa;
 
 public class EjecucionController {
 
-    public static final int MODO_BFS = 1;
-    public static final int MODO_DFS = 2;
+    public static final int BFS = 1;
+    public static final int DFS = 2;
 
-    private int modoRecorrido = 0;
+    private int modo = 0;
     private PanelMapa panel;
 
     public EjecucionController(PanelMapa panel) {
         this.panel = panel;
     }
 
-    // 👉 Solo selecciona
-    public void seleccionarBFS() {
-        modoRecorrido = MODO_BFS;
-    }
+    public void seleccionarBFS() { modo = BFS; }
+    public void seleccionarDFS() { modo = DFS; }
 
-    public void seleccionarDFS() {
-        modoRecorrido = MODO_DFS;
-    }
-
-    //  Ejecuta
     public void run() {
-        if (modoRecorrido == MODO_BFS) {
-            panel.ejecutarBFS();
-        } else if (modoRecorrido == MODO_DFS) {
-            panel.ejecutarDFS();
-        }
+        if (modo == BFS) panel.ejecutarBFS();
+        if (modo == DFS) panel.ejecutarDFS();
     }
 }

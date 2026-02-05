@@ -7,8 +7,6 @@ public class EdicionController {
     public static final int MODO_INICIO = 3;
     public static final int MODO_DESTINO = 4;
     public static final int MODO_ELIMINAR = 5;
-    public static final int MODO_CONECTAR = 6;
-
 
     private int modoActual = MODO_NODO;
 
@@ -21,10 +19,6 @@ public class EdicionController {
     public void setModoInicio() { modoActual = MODO_INICIO; }
     public void setModoDestino() { modoActual = MODO_DESTINO; }
     public void setModoEliminar() { modoActual = MODO_ELIMINAR; }
-    public void setModoConectar() {
-    modoActual = MODO_CONECTAR;
-}
-
 }
 
 

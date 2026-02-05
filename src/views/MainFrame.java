@@ -1,10 +1,10 @@
 package views;
 
-import javax.swing.JFrame;
-import java.awt.BorderLayout;
-
+import controllers.ConexionController;
 import controllers.EdicionController;
 import controllers.EjecucionController;
+import java.awt.*;
+import javax.swing.*;
 
 public class MainFrame extends JFrame {
 
@@ -12,33 +12,19 @@ public class MainFrame extends JFrame {
 
         setTitle("Mapa");
         setSize(900, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-
-        // ✅ Layout correcto para que el panel se adapte
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Controladores
         EdicionController edicion = new EdicionController();
+        ConexionController conexion = new ConexionController();
 
-        // Panel del mapa
-        PanelMapa panel = new PanelMapa(edicion);
-
-        // ✅ MUY IMPORTANTE: agregar al CENTER
-        add(panel, BorderLayout.CENTER);
-
-        // Ejecución BFS / DFS
+        PanelMapa panel = new PanelMapa(edicion, conexion);
         EjecucionController ejecucion = new EjecucionController(panel);
 
-        // Menú
-        MenuPrincipal menu = new MenuPrincipal(edicion, ejecucion, panel);
-        setJMenuBar(menu);
+        setJMenuBar(new MenuPrincipal(edicion, conexion, ejecucion, panel));
+        add(panel, BorderLayout.CENTER);
 
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 }
-
-
-
-
-
