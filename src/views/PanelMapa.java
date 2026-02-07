@@ -38,6 +38,8 @@ public class PanelMapa extends JPanel {
     // ===== Datos =====
     private List<Nodo> nodos = new ArrayList<>();
     private List<Obstaculo> obstaculos = new ArrayList<>();
+    List<Nodo> nodosObstaculo = new ArrayList<>();
+
 
     private Graph<Nodo> grafo = new Graph<>();
     private Map<Nodo, Node<Nodo>> mapaNodos = new HashMap<>();
@@ -56,6 +58,9 @@ public class PanelMapa extends JPanel {
     private Ruta rutaFinal;
     private boolean mostrarRecorrido = true;
     private boolean mostrarConexiones = true;
+    private long tiempoBFS = 0;
+    private long tiempoDFS = 0;
+
 
     private static final int RADIO_NODO = 12;
 
@@ -90,31 +95,51 @@ public class PanelMapa extends JPanel {
         });
     }
 
-    /* ===================== CLICK ===================== */
+    
 
     private void manejarClickIzquierdo(int x, int y) {
 
+    
+        if (conexion.getModo() != ConexionController.NINGUNO) {
+            manejarConexion(x, y);
+            return;
+        }
+
+        
         switch (edicion.getModoActual()) {
 
             case EdicionController.MODO_NODO ->
-                    agregarNodo(new Nodo(x, y));
+                agregarNodo(new Nodo(x, y));
 
-            case EdicionController.MODO_OBSTACULO ->
-                    obstaculos.add(new Obstaculo(x, y));
+            case EdicionController.MODO_OBSTACULO -> {
+                Nodo n = buscarNodo(x, y);
+
+                if (n != null) {
+                    if (!nodosObstaculo.contains(n))
+                        nodosObstaculo.add(n);
+                }
+            }
+
+            case EdicionController.MODO_RETIRAR_OBSTACULO -> {
+                Nodo n = buscarNodo(x, y);
+
+                if (n != null) {
+                    nodosObstaculo.remove(n);
+                }   
+            }
 
             case EdicionController.MODO_INICIO ->
-                    inicio = buscarNodo(x, y);
+                inicio = buscarNodo(x, y);
 
             case EdicionController.MODO_DESTINO ->
-                    destino = buscarNodo(x, y);
+                destino = buscarNodo(x, y);
 
             case EdicionController.MODO_ELIMINAR ->
-                    eliminarNodo(x, y);
-
-            default ->
-                    manejarConexion(x, y);
+                eliminarNodo(x, y);
         }
     }
+
+
 
     private void manejarClickDerecho(int x, int y) {
         if (conexion.getModo() == ConexionController.ELIMINAR) {
@@ -122,7 +147,7 @@ public class PanelMapa extends JPanel {
         }
     }
 
-    /* ===================== CONEXIONES ===================== */
+   
 
     private void manejarConexion(int x, int y) {
 
@@ -197,39 +222,86 @@ public class PanelMapa extends JPanel {
             );
             return;
         }
-
-        if (timer != null && timer.isRunning()) timer.stop();
+        if (timer != null && timer.isRunning())
+            timer.stop();
 
         recorridoExploracion.clear();
         recorridoCompleto.clear();
         rutaFinal = null;
         indiceAnimacion = 0;
 
+        long inicioTiempo = System.nanoTime();
+
         if (bfs) {
             rutaFinal = grafo.bfsRuta(
-                    mapaNodos.get(inicio),
-                    mapaNodos.get(destino),
-                    recorridoCompleto,
-                    obtenerBloqueados()
+                mapaNodos.get(inicio),
+                mapaNodos.get(destino),
+                recorridoCompleto,
+                obtenerBloqueados()
             );
+            tiempoBFS = System.nanoTime() - inicioTiempo;
+
         } else {
             rutaFinal = grafo.dfsRuta(
-                    mapaNodos.get(inicio),
-                    mapaNodos.get(destino),
-                    recorridoCompleto,
-                    obtenerBloqueados()
+                mapaNodos.get(inicio),
+                mapaNodos.get(destino),
+                recorridoCompleto,
+                obtenerBloqueados()
             );
+            tiempoDFS = System.nanoTime() - inicioTiempo;
         }
 
+    
         timer = new Timer(350, e -> {
             if (indiceAnimacion < recorridoCompleto.size()) {
                 recorridoExploracion.add(
-                        recorridoCompleto.get(indiceAnimacion)
+                    recorridoCompleto.get(indiceAnimacion)
                 );
+
                 indiceAnimacion++;
                 repaint();
+
             } else {
+
                 timer.stop();
+
+            
+                boolean encontrada = false;
+
+                if (rutaFinal != null &&
+                    !rutaFinal.getNodos().isEmpty()) {
+
+                    Nodo ultimo = rutaFinal
+                        .getNodos()
+                        .get(rutaFinal.getNodos().size() - 1);
+
+                    if (ultimo.equals(destino)) {
+                        encontrada = true;
+                    }
+                }
+
+                if (encontrada) {
+
+                    long tiempoMs =
+                        (bfs ? tiempoBFS : tiempoDFS) / 1_000_000;
+
+                        JOptionPane.showMessageDialog(
+                            PanelMapa.this,
+                            "Destino encontrado\nTiempo: "
+                            + tiempoMs + " ms"
+                        );
+
+                } else {
+
+                    rutaFinal = null;
+
+                    JOptionPane.showMessageDialog(
+                        PanelMapa.this,
+                            "No se encontró una ruta para el destino\n"
+                            + "(Ruta con bloqueo)"
+                    );
+                }
+
                 repaint();
             }
         });
@@ -237,15 +309,12 @@ public class PanelMapa extends JPanel {
         timer.start();
     }
 
+
     private Set<Nodo> obtenerBloqueados() {
-        Set<Nodo> bloqueados = new HashSet<>();
-        for (Obstaculo o : obstaculos) {
-            bloqueados.add(new Nodo(o.getX(), o.getY()));
-        }
-        return bloqueados;
+        return new HashSet<>(nodosObstaculo);
     }
 
-    /* ===================== NODOS ===================== */
+
 
     private void agregarNodo(Nodo n) {
         nodos.add(n);
@@ -290,83 +359,214 @@ public class PanelMapa extends JPanel {
     protected void paintComponent(Graphics g) {
 
         super.paintComponent(g);
-        g.drawImage(mapa, 0, 0, getWidth(), getHeight(), this);
 
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setStroke(new BasicStroke(2));
+    // ===== MAPA =====
+    g.drawImage(mapa, 0, 0, getWidth(), getHeight(), this);
 
-        if (mostrarConexiones) {
-            g2.setColor(Color.BLACK);
-            for (Nodo n : nodos) {
-                Node<Nodo> a = mapaNodos.get(n);
-                for (Node<Nodo> b : grafo.getNeighbors2(a)) {
-                    dibujarFlecha(g2, n, b.getValue());
-                }
-            }
-        }
+    Graphics2D g2 = (Graphics2D) g;
+    g2.setStroke(new BasicStroke(2));
 
-        if (mostrarRecorrido) {
-            g2.setColor(Color.BLUE);
-            for (int i = 1; i < recorridoExploracion.size(); i++) {
-                Nodo a = recorridoExploracion.get(i - 1).getValue();
-                Nodo b = recorridoExploracion.get(i).getValue();
-                g2.drawLine(a.getX(), a.getY(), b.getX(), b.getY());
-            }
-        }
+    
 
-        if (rutaFinal != null) {
-            g2.setColor(new Color(128, 0, 128));
-            List<Nodo> r = rutaFinal.getNodos();
-            for (int i = 0; i < r.size() - 1; i++) {
-                g2.drawLine(
-                        r.get(i).getX(), r.get(i).getY(),
-                        r.get(i + 1).getX(), r.get(i + 1).getY()
-                );
-            }
-        }
-
-        g2.setColor(Color.RED);
-        for (Obstaculo o : obstaculos)
-            g2.fillOval(o.getX() - 4, o.getY() - 4, 8, 8);
-
+    if (mostrarConexiones)
         g2.setColor(Color.BLACK);
-        for (Nodo n : nodos)
-            g2.fillOval(
-                    n.getX() - RADIO_NODO,
-                    n.getY() - RADIO_NODO,
-                    RADIO_NODO * 2,
-                    RADIO_NODO * 2
+    else
+        g2.setColor(new Color(0,0,0,40));
+
+    for (Nodo n : nodos) {
+
+        Node<Nodo> a = mapaNodos.get(n);
+
+        for (Node<Nodo> b : grafo.getNeighbors2(a)) {
+
+            boolean bidireccional =
+                grafo.getNeighbors2(b).contains(a);
+
+            if (bidireccional)
+                dibujarDobleFlecha(g2, n, b.getValue());
+            else
+                dibujarFlecha(g2, n, b.getValue());
+        }
+    }
+
+    
+
+    if (mostrarRecorrido) {
+
+        g2.setColor(Color.BLUE);
+
+        for (int i = 1; i < recorridoExploracion.size(); i++) {
+
+            Nodo a = recorridoExploracion.get(i - 1).getValue();
+            Nodo b = recorridoExploracion.get(i).getValue();
+
+            g2.drawLine(
+                a.getX(), a.getY(),
+                b.getX(), b.getY()
             );
-
-        if (inicio != null) {
-            g2.setColor(Color.BLUE);
-            g2.fillOval(inicio.getX() - 16, inicio.getY() - 16, 32, 32);
-        }
-
-        if (destino != null) {
-            g2.setColor(Color.GREEN);
-            g2.fillOval(destino.getX() - 16, destino.getY() - 16, 32, 32);
         }
     }
 
-    private void dibujarFlecha(Graphics2D g, Nodo a, Nodo b) {
+    
 
-        g.drawLine(a.getX(), a.getY(), b.getX(), b.getY());
+    if (rutaFinal != null &&
+        indiceAnimacion >= recorridoCompleto.size()) {
 
-        double ang = Math.atan2(
-                b.getY() - a.getY(),
-                b.getX() - a.getX()
+        g2.setColor(new Color(128, 0, 128));
+
+        List<Nodo> r = rutaFinal.getNodos();
+
+        for (int i = 0; i < r.size() - 1; i++) {
+
+            g2.drawLine(
+                r.get(i).getX(), r.get(i).getY(),
+                r.get(i + 1).getX(), r.get(i + 1).getY()
+            );
+        }
+    }
+
+    
+
+    for (Nodo n : nodos) {
+
+        if (nodosObstaculo.contains(n))
+            g2.setColor(Color.RED);
+        else
+            g2.setColor(Color.BLACK);
+
+        g2.fillOval(
+            n.getX() - RADIO_NODO,
+            n.getY() - RADIO_NODO,
+            RADIO_NODO * 2,
+            RADIO_NODO * 2
         );
-
-        int f = 10;
-
-        int x1 = (int) (b.getX() - f * Math.cos(ang - Math.PI / 6));
-        int y1 = (int) (b.getY() - f * Math.sin(ang - Math.PI / 6));
-
-        int x2 = (int) (b.getX() - f * Math.cos(ang + Math.PI / 6));
-        int y2 = (int) (b.getY() - f * Math.sin(ang + Math.PI / 6));
-
-        g.drawLine(b.getX(), b.getY(), x1, y1);
-        g.drawLine(b.getX(), b.getY(), x2, y2);
     }
+
+    
+
+    if (inicio != null) {
+        g2.setColor(Color.BLUE);
+        g2.fillOval(inicio.getX()-16, inicio.getY()-16, 32, 32);
+    }
+
+    if (destino != null) {
+        g2.setColor(Color.GREEN);
+        g2.fillOval(destino.getX()-16, destino.getY()-16, 32, 32);
+    }
+}
+
+
+
+
+
+    private void dibujarFlecha(Graphics2D g2, Nodo a, Nodo b) {
+
+        int x1 = a.getX();
+        int y1 = a.getY();
+        int x2 = b.getX();
+        int y2 = b.getY();
+
+        // Línea
+        g2.drawLine(x1, y1, x2, y2);
+
+        // Calcular ángulo
+        double dx = x2 - x1;
+        double dy = y2 - y1;
+        double angulo = Math.atan2(dy, dx);
+
+        int tamaño = 12; // tamaño punta
+
+        int xFlecha1 = (int) (x2 - tamaño * Math.cos(angulo - Math.PI / 6));
+        int yFlecha1 = (int) (y2 - tamaño * Math.sin(angulo - Math.PI / 6));
+
+        int xFlecha2 = (int) (x2 - tamaño * Math.cos(angulo + Math.PI / 6));
+        int yFlecha2 = (int) (y2 - tamaño * Math.sin(angulo + Math.PI / 6));
+
+        // Dibujar punta
+        g2.drawLine(x2, y2, xFlecha1, yFlecha1);
+        g2.drawLine(x2, y2, xFlecha2, yFlecha2);
+    }
+
+    private void dibujarDobleFlecha(Graphics2D g2, Nodo a, Nodo b) {
+
+        // Línea base
+        g2.drawLine(a.getX(), a.getY(), b.getX(), b.getY());
+
+        // Flecha A ➜ B
+        dibujarPunta(g2, a, b);
+
+        // Flecha B ➜ A
+        dibujarPunta(g2, b, a);
+    }
+    private void dibujarPunta(Graphics2D g2, Nodo a, Nodo b) {
+
+        int x1 = a.getX();
+        int y1 = a.getY();
+        int x2 = b.getX();
+        int y2 = b.getY();
+
+        double dx = x2 - x1;
+        double dy = y2 - y1;
+        double angulo = Math.atan2(dy, dx);
+
+        int tamaño = 12;
+
+        int xFlecha1 = (int) (x2 - tamaño * Math.cos(angulo - Math.PI / 6));
+        int yFlecha1 = (int) (y2 - tamaño * Math.sin(angulo - Math.PI / 6));
+
+        int xFlecha2 = (int) (x2 - tamaño * Math.cos(angulo + Math.PI / 6));
+        int yFlecha2 = (int) (y2 - tamaño * Math.sin(angulo + Math.PI / 6));
+
+        g2.drawLine(x2, y2, xFlecha1, yFlecha1);
+        g2.drawLine(x2, y2, xFlecha2, yFlecha2);
+    }
+
+
+
+    public long getTiempoBFS() {
+        return tiempoBFS;
+    }
+
+    public long getTiempoDFS() {
+        return tiempoDFS;
+    }
+
+    public Nodo getInicio() {
+        return inicio;
+    }
+
+    public Nodo getDestino() {
+        return destino;
+    }
+
+    public void limpiarRecorrido() {
+
+        if (recorridoExploracion != null)
+            recorridoExploracion.clear();
+
+        rutaFinal = null;
+
+        repaint();
+    }
+    public void limpiarMapa() {
+
+        nodos.clear();
+        obstaculos.clear();
+        mapaNodos.clear();
+
+        grafo = new Graph<>();
+
+        inicio = null;
+        destino = null;
+
+        if (recorridoExploracion != null)
+            recorridoExploracion.clear();
+
+        rutaFinal = null;
+
+        repaint();
+    }
+
+
+
 }

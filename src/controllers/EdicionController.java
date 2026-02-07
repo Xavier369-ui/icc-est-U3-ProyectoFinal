@@ -7,11 +7,16 @@ public class EdicionController {
     public static final int MODO_INICIO = 3;
     public static final int MODO_DESTINO = 4;
     public static final int MODO_ELIMINAR = 5;
+    public static final int MODO_RETIRAR_OBSTACULO = 6;
+
 
     private int modoActual = MODO_NODO;
 
     public int getModoActual() {
         return modoActual;
+    }
+    public void setModoRetirarObstaculo() {
+        modoActual = MODO_RETIRAR_OBSTACULO;
     }
 
     public void setModoNodo() { modoActual = MODO_NODO; }
@@ -19,6 +24,11 @@ public class EdicionController {
     public void setModoInicio() { modoActual = MODO_INICIO; }
     public void setModoDestino() { modoActual = MODO_DESTINO; }
     public void setModoEliminar() { modoActual = MODO_ELIMINAR; }
+    public void limpiar() {
+    modoActual = 0;
+    
+}
+
 }
 
 

@@ -85,13 +85,17 @@ public class Graph<T> {
         return false;
     }
 
-    private Ruta construirRuta(Node<T> destino,
-                               Map<Node<T>, Node<T>> padre) {
+    private Ruta construirRuta(Node<T> destino, Map<Node<T>, Node<T>> padre) {
+
+    
+        if (!padre.containsKey(destino)) {
+            return null;
+        }
 
         List<Nodo> camino = new ArrayList<>();
         Node<T> actual = destino;
 
-        while (actual != null && padre.containsKey(actual)) {
+        while (actual != null) {
             camino.add((Nodo) actual.getValue());
             actual = padre.get(actual);
         }
@@ -99,4 +103,5 @@ public class Graph<T> {
         Collections.reverse(camino);
         return new Ruta(camino);
     }
+
 }
