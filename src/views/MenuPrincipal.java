@@ -12,7 +12,7 @@ public class MenuPrincipal extends JMenuBar {
             EjecucionController ejecucion,
             PanelMapa panel) {
 
-        // ===== MENUS =====
+        
         JMenu ed = new JMenu("Edicion");
         JMenu rec = new JMenu("Recorrido");
         JMenu con = new JMenu("Conexiones");
@@ -20,11 +20,11 @@ public class MenuPrincipal extends JMenuBar {
 
         VerTiemposFrame tiemposFrame = new VerTiemposFrame();
 
-        // ====== EDICION ======
+        
 
         JMenuItem nodo = new JMenuItem("Agregar nodo");
         nodo.addActionListener(e -> {
-            conexion.limpiar();     // ← IMPORTANTE
+            conexion.limpiar();     
             edicion.setModoNodo();
         });
 
@@ -61,7 +61,7 @@ public class MenuPrincipal extends JMenuBar {
         ed.add(limpiarMapa);
 
 
-        // ====== RECORRIDO ======
+        
 
         JMenuItem setInicio = new JMenuItem("Seleccionar inicio");
         setInicio.addActionListener(e -> {
@@ -98,7 +98,7 @@ public class MenuPrincipal extends JMenuBar {
         rec.add(limpiarRec);
 
 
-        // ====== CONEXIONES ======
+       
 
         JMenuItem uni = new JMenuItem("Agregar unidireccional");
         uni.addActionListener(e -> {
@@ -141,7 +141,7 @@ public class MenuPrincipal extends JMenuBar {
         ed.add(quitarObs);
 
 
-        // ====== VER TIEMPOS ======
+        
 
         JMenuItem ver = new JMenuItem("Mostrar tiempos");
         ver.addActionListener(e -> {
@@ -169,7 +169,7 @@ public class MenuPrincipal extends JMenuBar {
 
         tiempos.add(ver);
 
-        // ====== AGREGAR A BARRA ======
+       
 
         add(ed);
         add(rec);

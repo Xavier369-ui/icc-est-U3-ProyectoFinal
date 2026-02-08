@@ -35,7 +35,6 @@ public class PanelMapa extends JPanel {
     private EdicionController edicion;
     private ConexionController conexion;
 
-    // ===== Datos =====
     private List<Nodo> nodos = new ArrayList<>();
     private List<Obstaculo> obstaculos = new ArrayList<>();
     List<Nodo> nodosObstaculo = new ArrayList<>();
@@ -49,7 +48,7 @@ public class PanelMapa extends JPanel {
 
     private Nodo nodoConexionInicio;
 
-    // ===== Recorrido =====
+    
     private List<Node<Nodo>> recorridoExploracion = new ArrayList<>();
     private List<Node<Nodo>> recorridoCompleto = new ArrayList<>();
     private int indiceAnimacion = 0;
@@ -201,7 +200,7 @@ public class PanelMapa extends JPanel {
         ) <= 5;
     }
 
-    /* ===================== BFS / DFS ===================== */
+   
 
     public void ejecutarBFS() {
         ejecutarRecorrido(true);
@@ -341,7 +340,7 @@ public class PanelMapa extends JPanel {
         return null;
     }
 
-    /* ===================== VISUAL ===================== */
+    
 
     public void ocultarConexiones() {
         mostrarConexiones = false;
@@ -353,14 +352,14 @@ public class PanelMapa extends JPanel {
         repaint();
     }
 
-    /* ===================== DIBUJO ===================== */
+    
 
     @Override
     protected void paintComponent(Graphics g) {
 
         super.paintComponent(g);
 
-    // ===== MAPA =====
+   
     g.drawImage(mapa, 0, 0, getWidth(), getHeight(), this);
 
     Graphics2D g2 = (Graphics2D) g;
@@ -466,15 +465,15 @@ public class PanelMapa extends JPanel {
         int x2 = b.getX();
         int y2 = b.getY();
 
-        // Línea
+      
         g2.drawLine(x1, y1, x2, y2);
 
-        // Calcular ángulo
+        
         double dx = x2 - x1;
         double dy = y2 - y1;
         double angulo = Math.atan2(dy, dx);
 
-        int tamaño = 12; // tamaño punta
+        int tamaño = 12; 
 
         int xFlecha1 = (int) (x2 - tamaño * Math.cos(angulo - Math.PI / 6));
         int yFlecha1 = (int) (y2 - tamaño * Math.sin(angulo - Math.PI / 6));
@@ -482,20 +481,20 @@ public class PanelMapa extends JPanel {
         int xFlecha2 = (int) (x2 - tamaño * Math.cos(angulo + Math.PI / 6));
         int yFlecha2 = (int) (y2 - tamaño * Math.sin(angulo + Math.PI / 6));
 
-        // Dibujar punta
+        
         g2.drawLine(x2, y2, xFlecha1, yFlecha1);
         g2.drawLine(x2, y2, xFlecha2, yFlecha2);
     }
 
     private void dibujarDobleFlecha(Graphics2D g2, Nodo a, Nodo b) {
 
-        // Línea base
+        
         g2.drawLine(a.getX(), a.getY(), b.getX(), b.getY());
 
-        // Flecha A ➜ B
+    
         dibujarPunta(g2, a, b);
 
-        // Flecha B ➜ A
+       
         dibujarPunta(g2, b, a);
     }
     private void dibujarPunta(Graphics2D g2, Nodo a, Nodo b) {

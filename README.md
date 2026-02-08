@@ -78,8 +78,7 @@
     - Archivos .txt para persistencia de coordenadas
  
 ## Diagrama UML 
-
-![alt text](UML.drawio.png)
+   ![alt text](UMLPF.drawio.png)
 
    Explicacion General de algunas Clases
 
@@ -104,6 +103,8 @@ Funcionamiento general del sistema
 - Se muestra el resultado final con mensajes informativos.
 
 ## 🧑‍💻 Capturas del Proyecto en ejecucion
+
+![alt text](image.png)
 
 ## Conclusión 
 - Integrante Xavier Fajardo
